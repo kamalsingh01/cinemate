@@ -1,5 +1,5 @@
 from django.db import models
-from watchlist.views import movie_list, movie_detail
+from watchlist.views_json_response import movie_list, movie_detail
 from django.urls import path, include
 
 urlpatterns = [
