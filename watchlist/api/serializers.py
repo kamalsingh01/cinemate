@@ -13,6 +13,7 @@ class MovieSerializer(serializers.Serializer):
         return Movies.objects.create(**validated_data)  #validated_data has multiple argument passed from frontend application.
         #creating an object of ModelName class using data from frontend pushed using POST and passing it to corresponding view.
 
+    #for PUT
     def update(self, instance, validated_data):  #instance carries old values of the selected object and validated data carries new values
         #in update, we need to update old values with new values
         instance.title = validated_data.get('title',instance.title)
