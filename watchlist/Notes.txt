@@ -1,0 +1,61 @@
+     
+CLASS BASED VIEWS: 
+
+REST framework provides an APIView class, which subclasses Django's View class. It is different from view class in Django as: 
+
+1. Requests passed to the handler methods will be REST framework's Request instances, not Django's HttpRequest instances.
+2. Handler methods may return REST framework's Response, instead of Django's HttpResponse. The view will manage content negotiation and setting the correct renderer on the response.
+3. Any APIException exceptions will be caught and mediated into appropriate responses.
+4. Incoming requests will be authenticated and appropriate permission and/or throttle checks will be run before dispatching the request to the handler method, meaning authentication and permissions are checked before making call to handler methods.
+ 
+
+ 5. We create view class and extend API view. inside, Instead of defining condition for checking the request method, we can directly use Httprequest based methods provided by API View class
+> We do not need to define any decorator with our class based views.
+
+VALIDATIONS: 
+
+> Validations are defined in Serializers and are called in views.
+
+    Types: 
+    1. Field Level Validation : Use to validate any particular field. We define a method in serializer as validate_<field_name> and then define the conditions to check.
+    2. Object level validation : Valiates data object of any class, for e.g. comparing two fields of any object.
+    3. validator() : used/applied specifucally on the field instance on a serializer class.(in lamen, applied at run time.) - saerializer.py, line 7
+
+SERIALIZER FIELDS: 
+     
+>. Serializer fields handle converting between primitive values and internal datatypes. They also deal with validating input values, as well as retrieving and setting the values from their parent objects.
+>  The serializer fields are declared in fields.py, but are imoported from reset_frmeork.serializers
+> different fields : BooleanField, CharField, EmailField, SlugField, URLField, ImageField,DateTimeField, ChoiceField , etc...
+
+CORE ARGUMENTS : Core arguments helps applying some constraints and resrtiction on the field and its working.
+            for e.g : read_only, write_only, required, default, validators, etc...
+
+MODEL SERIALIZER : 
+
+> The ModelSerializer class provides a shortcut that lets you automatically create a Serializer class with fields that correspond to the Model fields. Pretty much similar to Serializers class but: 
+
+    >>. includes simple default implementations of .create() and .update().
+    >>. Model serializer automatically generate a set of fields based on the corresponding model.
+    >>. automatically generates validators for the serializer, like unique_together validators
+   
+
+> By default, all the model fields on the class will be mapped to a corresponding serializer fields.
+> In ModelSerializer class we define meta class which defines the correspondin model and fields are to be serialized from the model.
+> If we want all the fields, fields = "__all__" 
+> if we want some fields, fields = [ "id", "title", "description" ]
+
+HYPERLINK MODEL SERIALIZER :
+> Similar to ModelSerializer class except that it uses hyperlinks to represetns relationaships, rather than primary key
+
+
+GENERIC API VIEWS : 
+
+MIxins: derived from Generic API View, generally used to perform straight forward CRUD Operations
+
+CONCRETE API VIEWS CLASSES : When we use Concrete view classes, there is no need to define any methods to perform CRUD operations, methods are already defined in the class definition. In concrete view classes we just import task specific view classes.
+
+VIEWSETS:  Using viewset we combine two different classes for list and retrive and under on class we define two multiple functions and these functions are referred with using routers. 
+Routers combine all different types of links/urls
+This helps shortening the number of URLs and used in big projects.
+
+MODEL VIEWSETS : Model viewset by default provides all the CRUD methods and we can use all of these just under one class.
