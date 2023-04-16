@@ -7,7 +7,9 @@ from rest_framework.views import APIView        #for class based views
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from rest_framework import viewsets
-
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from watchlist.api.permissions import AdminOrReadOnly, ReviewUserOrReadOnly
 
 # from rest_framework import mixins
 from rest_framework import generics
@@ -20,6 +22,7 @@ from rest_framework import generics
 class ReviewList(generics.ListAPIView):     # ListApiView gives get() and post() methods
     # queryset = Reviews.objects.all()
     serializer_class  = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     #method to overwrite queryset based on requirement
     def get_queryset(self):
@@ -32,16 +35,35 @@ class ReviewList(generics.ListAPIView):     # ListApiView gives get() and post()
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reviews.objects.all()
     serializer_class = ReviewSerializer
-
+    permission_classes = [ReviewUserOrReadOnly ]  
 
 class CreateReview(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+ 
+    def get_queryset(self):
+        return Reviews.objects.all()
 
     def perform_create(self, serializer):       # generic class class this to POST
         pk = self.kwargs['pk']
         movie = WatchList.objects.get(pk=pk)
 
-        serializer.save(watchlist = movie)
+        # checking if any review already exists for the user
+        review_user = self.request.user
+        review_queryset = Reviews.objects.filter(watchlist = movie, review_user = review_user)
+
+        if review_queryset.exists():
+            raise ValidationError("You have already reviwed this screenplay.")
+
+        # if no review present fot the current screenplay
+        if movie.number_of_rating == 0:
+            movie.avg_rating = serializer.validated_data['rating']
+        else:
+            movie.avg_rating = (movie.avg_rating +  serializer.validated_data['rating'])/2
+        
+        movie.number_of_rating +=1
+        movie.save()
+        
+        serializer.save(watchlist = movie, review_user = review_user)
 
     # def per(self):
     #     pk = self.kwargs['pk']

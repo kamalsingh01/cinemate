@@ -59,3 +59,26 @@ Routers combine all different types of links/urls
 This helps shortening the number of URLs and used in big projects.
 
 MODEL VIEWSETS : Model viewset by default provides all the CRUD methods and we can use all of these just under one class.
+
+PERMISSIONS: 
+> Permissions are used to grant or deny access for different classes of users to different parts of the API. Permissions manly runs at the front of any view class code.
+
+> The simplest style of permission would be to allow access to any authenticated user, and deny access to any unauthenticated user. This corresponds to the IsAuthenticated class in REST framework.
+
+> Permissions in REST framework are defined as list of permission classes and before running the view class code, this list of permissions are checked. If failed, exceptions.PermissionDenied or exception.NotAuthnticated exception will be raised and main body of the view will not run.( code 403 or 401 can be returned)
+    403 Forbidden - request authenticated but permission denied
+
+> Oject level permission is also used in drf, where it determines if an user is allowed to act on an object or not.
+Permissions are applied in two ways, either by defining it in SETTINGS.py which affects all the view class. And, second is Oject level permission, where we define the permission in view class itself, and restrict it for certain URL or view.
+    multiple permissions: allowany, IsAuthenticated(user must be logged-in), ISAdminUser, IsAuthenticatedOrReadOnly( logged in user can edit, otherwise others can read only), 
+
+> The default permission policy may be set globally, using the DEFAULT_PERMISSION_CLASSES setting.( in settings.py file) at bottom.
+
+> We can set the authentication policy on a per-view, or per-viewset basis, using the APIView class-based views.(Object Level Permissions)
+
+@ CUSTOM BASED PERMISSIONS : Used for any special requirement which allows us to set permissions based on whether the user is authenticated or not, the request method, the group that the user belongs to, object attributes, the IP address... or any of their combinations.
+
+> to implemnt first we need to store our code for Custom permission and then to import it in the view classes, also we override BasePermission class.
+
+NOTE: If you need to test if a request is a read operation or a write operation, you should check the request method against the constant SAFE_METHODS, which is a tuple containing 'GET', 'OPTIONS' and 'HEAD'.
+

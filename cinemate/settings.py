@@ -130,3 +130,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#setting global permission policy - applied on all the view classes.
+# if global permission is not defined, by default AllowAny is considered
+# NOTE: do not create multiple REST_FRAMEWORK objects.
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ], 
+    
+# }

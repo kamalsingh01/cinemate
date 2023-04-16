@@ -51,11 +51,15 @@ class WatchList(models.Model):
     #in Db, foriegn key is basically represented by an integer field which is primary key of forigen object.
     #related_name is used for reverse relationship
 
+    #adding custom calculations, average rating and number of reviews, and they get updated after every review addition
+    avg_rating = models.FloatField(default=0)
+    number_of_rating = models.IntegerField(default=0)
+
     def __str__(self) -> str:
         return self.title # + self.genre
 
-class Reviews(models.Model):
-    #review_user = models.ForeignKey(User, on_delete=models.CASCADE)
+class Reviews(models.Model): 
+    review_user = models.ForeignKey(User, on_delete=models.CASCADE)
     watchlist = models.ForeignKey(WatchList, on_delete=models.CASCADE, related_name="reviews")
     rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.CharField(max_length=200, null=True)
