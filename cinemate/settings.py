@@ -41,9 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',  
+    #app used to create a table in Db to store tokens for users, make sure to migrate changes
+
 ]
 EXTERNAL_APPS = [
     'watchlist',
+    'user_app',
 ]
 
 INSTALLED_APPS = EXTERNAL_APPS + INSTALLED_APPS
@@ -141,3 +145,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     ], 
     
 # }
+REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.BasicAuthentication',
+    # ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
