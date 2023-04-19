@@ -117,3 +117,32 @@ TOKEN AUTHENTICATION(IMP) :  Works with sending token in the Authorization heade
 **BUILDING Registration Part : 1.Model -> 2.Serializer -> 3.Views -> 4.Creating URLs 
 
 Drwback of token authentication is that we need to hit extra request to validate the token from database( not recomended for very large projects)
+
+
+JWT AUTHENTIOCATION: 
+
+Advantage :     1. no dependency on DB for token verification
+                2. we can change token lifetimes
+Disadvantage :  1. as access token lives for 5 mins, we cannot revoke the token and ban the access, we can only control the access by deleting the user account related to the token.
+
+
+THROTTLING : restricting user based on the number of requests they send, like medium only allows 20-25 requests without registration.
+
+Two common Throttle requests are: 
+    1. AnonRateThrottle : for anonymous users
+    2. UserRateThrottle : registered users
+
+> Throttling can be applied globally on settings.py or locally on each  view class.
+> We can also alter throttling rates according to requirement based on time rates
+> throttle classes are added in the form of list(for class based views) and for function based views, we use decorator of throttle_class
+> #if the  default throttle setting is disabled these  rates are applied to only those classes on which throtling is applied COLLECTIVELY.
+> throtling is only applied to those view classes on which throttling is applied.
+> We can also manage throttle rates for every view classes either by creating a seperate file throttling.py or we use ScopeRatedThrottling class and define the rate inside our view class itself.(but mentioning the scoper ates in settings.py only.)(scopes)
+> with ScopeRatedThrottling we can combine throtlling rates of two different clases alltogether just by mentioning same throttle scopes and adding throttle scope name in settings.py
+
+FILTERING : helps extracting the correct data according to requirement.
+
+> Three things can be done in filtering : Filter, Search and Order the content.
+> filtering is mainly applied overriding get_queryset method.
+> we generally use django-filter package to apply all three features mentioned above.
+> 

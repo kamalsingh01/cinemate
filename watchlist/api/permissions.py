@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 #creating permission : admin can do all bbut other can read only.
 
-class AdminOrReadOnly(permissions.IsAdminUser):
+class IsAdminOrReadOnly(permissions.IsAdminUser):
 
     def has_permission(self, request, view): #wreturns boolen values
         admin_permission = bool(request.user and request.user.is_staff) 
@@ -17,7 +17,7 @@ class AdminOrReadOnly(permissions.IsAdminUser):
         else:
             return bool(request.user and request.user.is_staff)
 
-class ReviewUserOrReadOnly(permissions.BasePermission):
+class IsReviewUserOrReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
 
@@ -26,5 +26,5 @@ class ReviewUserOrReadOnly(permissions.BasePermission):
             return True         #permiting to go ahead
         else:
         #check permission for write request
-            return (obj.review_user == request.user)
+            return (obj.review_user == request.user or request.user.is_staff)
             # other users won't get to perform write operations other than review user

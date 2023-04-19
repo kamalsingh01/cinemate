@@ -9,8 +9,9 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from watchlist.api.permissions import AdminOrReadOnly, ReviewUserOrReadOnly
-
+from watchlist.api.permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle #for throttling
+from watchlist.api.throttling import ReviewCreateThrottle, ReviewListThrottle
 # from rest_framework import mixins
 from rest_framework import generics
 
@@ -18,11 +19,14 @@ from rest_framework import generics
                                     #ITS NOT OVER UNTIL ITS OVER
 
 # GENERIC API VIEW : Concrete Classes.
-
+from rest_framework_simplejwt.tokens import RefreshToken
 class ReviewList(generics.ListAPIView):     # ListApiView gives get() and post() methods
     # queryset = Reviews.objects.all()
     serializer_class  = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    #throttle_classes = [UserRateThrottle,AnonRateThrottle]
+    #custom throttle class
+    throttle_classes = [ReviewListThrottle]
 
     #method to overwrite queryset based on requirement
     def get_queryset(self):
@@ -35,11 +39,17 @@ class ReviewList(generics.ListAPIView):     # ListApiView gives get() and post()
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reviews.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [ReviewUserOrReadOnly ]  
+    permission_classes = [IsReviewUserOrReadOnly]  
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review-detail'
 
 class CreateReview(generics.CreateAPIView):
     serializer_class = ReviewSerializer
- 
+    permission_classes = [IsAuthenticated]
+    #throttle_classes = [UserRateThrottle,AnonRateThrottle]
+    #custom throttle class
+    throttle_classes = [ReviewCreateThrottle]
+
     def get_queryset(self):
         return Reviews.objects.all()
 
@@ -71,7 +81,7 @@ class CreateReview(generics.CreateAPIView):
 
 
 # generic API Views using mixins
-# class ReviewDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+# class ReviewDetail(mixins.RetrieveMAdminOrReadOnlyodelMixin, generics.GenericAPIView):
 #     queryset = Reviews.objects.all()
 #     serializer_class = ReviewSerializer
 
@@ -91,6 +101,8 @@ class CreateReview(generics.CreateAPIView):
 
 class StreamPlatformViewSet(viewsets.ViewSet):
 
+    permission_classes = [IsAdminOrReadOnly]
+
     def list(self,request): 
         queryset = StreamPlatform.objects.all()
         serializer = StreamPlatformSerializer(queryset, many=True )
@@ -109,8 +121,9 @@ class StreamPlatformViewSet(viewsets.ViewSet):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
-    def destroy(self, request,pk):
-        platform = StreamPlatform.objects.get(pk=pk)
+    def destroy(self, request ,pk):
+        platform = StreamPlatform.objects.get(id=pk)
+        print(platform)
         platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -126,6 +139,8 @@ there are other viewset like ReadOnlyModelViewset, etc.
 
 class StreamPlatformAV(APIView):
 
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self,request):
         platforms = StreamPlatform.objects.all()
         serializer = StreamPlatformSerializer(platforms, many=True) #context={'request': request})
@@ -139,34 +154,38 @@ class StreamPlatformAV(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-class StreamPlatformDetailsAV(APIView):
+# class StreamPlatformDetailsAV(APIView):
+
+#     permission_classes = [IsAdminOrReadOnly]
     
-    def get(self, request, slug):
-        try:
-            platform = StreamPlatform.objects.get(slug = slug) 
-        except StreamPlatform.DoesNotExist:
-             return Response({'msg':'Streaming Platform Not Found'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = StreamPlatformSerializer(platform)
-        return Response(serializer.data)
+#     def get(self, request, slug):
+#         try:
+#             platform = StreamPlatform.objects.get(slug = slug) 
+#         except StreamPlatform.DoesNotExist:
+#              return Response({'msg':'Streaming Platform Not Found'}, status=status.HTTP_404_NOT_FOUND)
+#         serializer = StreamPlatformSerializer(platform)
+#         return Response(serializer.data)
     
-    def put(self, request, slug):
-        platform = StreamPlatform.objects.get(slug = slug)
-        serializer = StreamPlatformSerializer(platform, data = request.data)
-        if serializer.is_valid():  
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+#     def put(self, request, slug):
+#         platform = StreamPlatform.objects.get(slug = slug)
+#         serializer = StreamPlatformSerializer(platform, data = request.data)
+#         if serializer.is_valid():  
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
     
-    def delete(self, requst,slug):
-        platform = StreamPlatform.objects.get(slug=slug)
-        platform.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, requst,slug):
+#         platform = StreamPlatform.objects.get(slug=slug)
+#         platform.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
         
 
 class WatchListAV(APIView):
+
+    permission_classes = [IsAdminOrReadOnly]
 
     #methods
     def get( self, request):
@@ -185,6 +204,7 @@ class WatchListAV(APIView):
 
 class WatchListDetailsAV(APIView):
 
+    permission_classes = [IsAdminOrReadOnly]
 
     #methods
     def get(self, request, pk):

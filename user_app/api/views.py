@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from user_app.models import *   #importing this will help generating token for the specigic user.
 from rest_framework import status
+#from rest_framework_simplejwt.tokens import RefreshToken for JWT
 
 # Create your views here.
 
@@ -32,9 +33,18 @@ def registration_view(request):
             data['response'] = 'Registration Successful'
             data['username'] = account.username
             data['email'] = account.email
-            #now fetching generated token from token class for the user instance generated from overriden save() method
+            
+            #manually creatinmg token
+            # now fetching generated token from token class for the user instance generated from overriden save() method
             token = Token.objects.get(user = account).key  
             data['token'] = token
+
+            #manually creating JWT token for user
+            # refresh = RefreshToken.for_user(account)
+            # data['token'] = {
+            #             'refresh': str(refresh),
+            #             'access': str(refresh.access_token),
+            # }
 
             #for existing users we can create as :
             # for user in User.objects.all():

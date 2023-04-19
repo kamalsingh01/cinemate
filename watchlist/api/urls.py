@@ -1,7 +1,7 @@
 from django.db import models
 #from watchlist.api.views import movie_list, movie_detail       #for function based views
 from watchlist.api.views import (WatchListAV, WatchListDetailsAV,
-                                StreamPlatformAV, StreamPlatformDetailsAV, 
+                                StreamPlatformAV,
                                 ReviewList, ReviewDetail, CreateReview, StreamPlatformViewSet)    #for class based views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
@@ -28,7 +28,7 @@ urlpatterns = [
 
     path('<int:pk>/reviews/', ReviewList.as_view(), name = 'review-details'),
     path('<int:pk>/review-create/', CreateReview.as_view(), name = 'create-review'),
-    path('review/<int:pk>', ReviewDetail.as_view(), name = 'review-detail')
+    path('review/<int:pk>/', ReviewDetail.as_view(), name = 'review-detail')
 
 
 ]

@@ -35,7 +35,7 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
     #     many=True,
     #     read_only=True,
     #     view_name='watchlist-details'
-    # )
+    # )POST
     class Meta:
         model = StreamPlatform
         fields = "__all__"
@@ -51,7 +51,7 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
     #defining validations
 
     #field level validation
-    # def validate_title(self, value):  #value contains the value of the validator field(e.g. title )
+    # def validate_title(self, value):  POST#value contains the value of the validator field(e.g. title )
         
     #     if len(value) < 2:
     #         raise serializers.ValidationError("Name is too Short!")

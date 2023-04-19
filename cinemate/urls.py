@@ -19,7 +19,7 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('watch/',include('watchlist.api.urls')),
-    #path('api-auth/',include('rest_framework.urls')),
+    #path('api-auth/',include('rest_framework.urls')),   - Temp;orary login  won't work if any authentication method is added in settings.py
     path('account/', include('user_app.api.urls'))
     
 ]

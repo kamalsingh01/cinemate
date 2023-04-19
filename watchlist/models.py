@@ -47,7 +47,7 @@ class WatchList(models.Model):
         default = 'Non-Fiction'
     )
     is_active = models.BooleanField(default=True)
-    platform = models.ForeignKey(StreamPlatform, default = " ", on_delete=models.SET_DEFAULT, related_name="watchlist")
+    platform = models.ForeignKey(StreamPlatform, default = 0 , on_delete=models.SET_DEFAULT, related_name="watchlist")
     #in Db, foriegn key is basically represented by an integer field which is primary key of forigen object.
     #related_name is used for reverse relationship
 
